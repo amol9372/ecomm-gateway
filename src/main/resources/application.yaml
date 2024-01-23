@@ -1,0 +1,52 @@
+server:
+  port: 8091
+
+management:
+  endpoint:
+    gateway:
+      enabled: true
+
+okta:
+  oauth2:
+    # Replace with the domain of your Auth0 tenant.
+    issuer: ${AUTH0_ISSUER}
+    # Replace with the API Identifier for your Auth0 API.
+    audience: ${AUTH0_AUDIENCE}
+    client-id: ${AUTH0_CLIENT_ID}
+    client-secret: ${AUTH0_CLIENT_SECRET}
+
+spring:
+  cloud:
+    gateway:
+      routes:
+        - id: ecomm-user
+          uri: http://localhost:8080/
+          predicates:
+            - Path=/user/**, /address/**
+          filters:
+            - PrefixPath=/api
+        - id: ecomm-product
+          uri: http://localhost:8081/
+          predicates:
+            - Path=/product/**, /category/**, /admin/**
+          filters:
+            - PrefixPath=/api
+        - id: ecomm-cart
+          uri: http://localhost:8082/
+          predicates:
+            - Path=/cart/**
+          filters:
+            - PrefixPath=/api
+
+  datasource:
+    url: jdbc:postgresql://${POSTGRES_URL}:5432/${POSTGRES_DB}
+    username: ${POSTGRES_USER}
+    password: ${POSTGRES_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+
+logging:
+  level:
+    org:
+      springframework:
+        cloud:
+          gateway: debug
