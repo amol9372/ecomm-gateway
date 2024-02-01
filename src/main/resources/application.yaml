@@ -6,15 +6,6 @@ management:
     gateway:
       enabled: true
 
-okta:
-  oauth2:
-    # Replace with the domain of your Auth0 tenant.
-    issuer: ${AUTH0_ISSUER}
-    # Replace with the API Identifier for your Auth0 API.
-    audience: ${AUTH0_AUDIENCE}
-    client-id: ${AUTH0_CLIENT_ID}
-    client-secret: ${AUTH0_CLIENT_SECRET}
-
 spring:
   cloud:
     gateway:
@@ -50,3 +41,8 @@ logging:
       springframework:
         cloud:
           gateway: debug
+
+auth0:
+  userinfo:
+    url: ${AUTH0_USERINFO_URL}
+  issuer: ${AUTH0_ISSUER}

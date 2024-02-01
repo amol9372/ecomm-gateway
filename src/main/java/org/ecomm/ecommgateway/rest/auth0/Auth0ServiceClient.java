@@ -1,6 +1,7 @@
 package org.ecomm.ecommgateway.rest.auth0;
 
 import lombok.extern.slf4j.Slf4j;
+import org.ecomm.ecommgateway.config.JwsFilter;
 import org.ecomm.ecommgateway.rest.model.UserInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,16 +18,22 @@ public class Auth0ServiceClient {
   @Value("${auth0.userinfo.url}")
   String userInfoUrl;
 
+
+  @Autowired
+  JwsFilter jwsFilter;
+
   public UserInfo getUserInfo(String token) {
 
     HttpHeaders headers = new HttpHeaders();
     headers.setContentType(MediaType.APPLICATION_JSON);
     headers.setBearerAuth(token);
 
-    HttpEntity<String> entity = new HttpEntity<>("body", headers);
-    ResponseEntity<UserInfo> response =
-        restTemplate.exchange(userInfoUrl, HttpMethod.GET, entity, UserInfo.class);
+    UserInfo userInfo = jwsFilter.validateToken(token);
 
-    return response.getBody();
+//    HttpEntity<String> entity = new HttpEntity<>("body", headers);
+//    ResponseEntity<UserInfo> response =
+//        restTemplate.exchange(userInfoUrl, HttpMethod.GET, entity, UserInfo.class);
+
+    return userInfo;
   }
 }
