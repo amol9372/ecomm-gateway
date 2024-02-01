@@ -43,8 +43,16 @@ public class AuthenticationFilter implements GlobalFilter {
       String authHeader = request.getHeaders().getOrEmpty("Authorization").get(0);
       UserInfo userInfo = auth0ServiceClient.getUserInfo(authHeader.split(" ")[1]);
 
-      ServerHttpRequest mutatedRequest = this.mutatedRequest.apply(userInfo, exchange);
-      return chain.filter(exchange.mutate().request(mutatedRequest).build());
+      return chain.filter(
+          exchange
+              .mutate()
+              .request(
+                  exchange
+                      .getRequest()
+                      .mutate()
+                      .header("x-auth0-user-email", userInfo.getEmail())
+                      .build())
+              .build());
     }
     return chain.filter(exchange);
   }
