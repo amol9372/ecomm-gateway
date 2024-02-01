@@ -11,19 +11,19 @@ spring:
     gateway:
       routes:
         - id: ecomm-user
-          uri: http://localhost:8080/
+          uri: http://172.17.0.1:8080/
           predicates:
             - Path=/user/**, /address/**
           filters:
             - PrefixPath=/api
         - id: ecomm-product
-          uri: http://localhost:8081/
+          uri: http://172.17.0.1:8081/
           predicates:
             - Path=/product/**, /category/**, /admin/**
           filters:
             - PrefixPath=/api
         - id: ecomm-cart
-          uri: http://localhost:8082/
+          uri: http://172.17.0.1:8082/
           predicates:
             - Path=/cart/**
           filters:
