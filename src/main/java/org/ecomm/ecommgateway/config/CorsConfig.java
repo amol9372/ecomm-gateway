@@ -18,7 +18,8 @@ public class CorsConfig extends CorsConfiguration {
     CorsConfiguration corsConfiguration = new CorsConfiguration();
     corsConfiguration.setAllowCredentials(true);
     corsConfiguration.addAllowedOrigin("http://localhost:3000");
-//    corsConfiguration.setAllowedOrigins(List.of("http://localhost:3000"));
+    corsConfiguration.addAllowedOrigin("https://ecomm-ui-kappa.vercel.app");
+    corsConfiguration.addAllowedOrigin("https://ecomm-ui-git-master-conservativeasslovers-projects.vercel.app");
     corsConfiguration.setAllowedMethods(
         Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD"));
 //    corsConfiguration.addAllowedHeader("origin");
