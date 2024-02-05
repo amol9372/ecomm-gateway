@@ -31,7 +31,7 @@ spring:
         - id: ecomm-order
           uri: http://172.17.0.1:8083/
           predicates:
-            - Path=/order/**
+            - Path=/order/**, /stripe/**
           filters:
             - PrefixPath=/api
 

@@ -31,7 +31,7 @@ spring:
         - id: ecomm-order
           uri: http://localhost:8083/
           predicates:
-            - Path=/order/**
+            - Path=/order/**, /stripe/**
           filters:
             - PrefixPath=/api
 
@@ -47,6 +47,7 @@ logging:
       springframework:
         cloud:
           gateway: debug
+    root: debug
 
 auth0:
   userinfo:
