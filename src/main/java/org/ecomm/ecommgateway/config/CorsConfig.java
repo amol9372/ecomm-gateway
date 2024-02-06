@@ -11,7 +11,7 @@ import java.util.Collections;
 import java.util.List;
 
 @Configuration
-public class CorsConfig extends CorsConfiguration {
+public class CorsConfig {
 
 //  @Bean
 //  public CorsWebFilter corsFilter() {

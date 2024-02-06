@@ -30,11 +30,10 @@ import org.springframework.stereotype.Component;
 import io.jsonwebtoken.SignatureAlgorithm;
 
 import java.security.interfaces.RSAPublicKey;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -42,13 +41,12 @@ import org.springframework.security.core.userdetails.UserDetails;
 @Component
 public class JwsUtil {
 
-  //  @Value("${application.security.jwt.secret-key}")
-  String secretKey = "436d58303377335967726d3537344a74747877314e7a4337684b6f6e72707149";
-  //  @Value("${application.security.jwt.expiration}")
-  private long jwtExpiration = 2 * 60 * 60 * 1000;
+  @Value("${jwt.secret-key}")
+  String secretKey;
 
-  //  @Value("${application.security.jwt.refresh-token.expiration}")
-  private long refreshExpiration = 3 * 24 * 60 * 60 * 1000;
+  static final long JWT_EXPIRATION = 2 * 60 * 60 * 1000;
+
+  static final long REFRESH_EXPIRATION = 3 * 24 * 60 * 60 * 1000;
 
   @Value("${auth0.issuer}")
   String issuer;
@@ -103,17 +101,20 @@ public class JwsUtil {
   }
 
   public String generateToken(Map<String, Object> extraClaims, UserCredentials userDetails) {
-    return buildToken(extraClaims, userDetails, jwtExpiration);
+    return buildToken(extraClaims, userDetails, JWT_EXPIRATION);
   }
 
   public String generateRefreshToken(UserCredentials userDetails) {
-    return buildToken(new HashMap<>(), userDetails, refreshExpiration);
+    return buildToken(new HashMap<>(), userDetails, REFRESH_EXPIRATION);
   }
 
   private String buildToken(
       Map<String, Object> extraClaims, UserCredentials userDetails, long expiration) {
+
+    List<String> stringStream =
+        userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
     return Jwts.builder()
-        .setClaims(Map.of("email", userDetails.getUsername()))
+        .setClaims(Map.of("email", userDetails.getUsername(), "roles", stringStream))
         .setSubject(userDetails.getSubject())
         .setIssuedAt(new Date(System.currentTimeMillis()))
         .setExpiration(new Date(System.currentTimeMillis() + expiration))
@@ -121,35 +122,28 @@ public class JwsUtil {
         .compact();
   }
 
-  public UserInfo verifyAppToken(String token){
+  public UserInfo verifyAppToken(String token) {
 
-    Claims body = Jwts.parserBuilder()
-            .setSigningKey(getSignInKey())
-            .build()
-            .parseClaimsJws(token)
-            .getBody();
+    Claims body =
+        Jwts.parserBuilder().setSigningKey(getSignInKey()).build().parseClaimsJws(token).getBody();
 
     return mapClaimsToUserInfo(body);
   }
 
   public Authentication getAuthentication(String token) {
-    Claims claims = Jwts.parserBuilder()
-            .setSigningKey(getSignInKey())
-            .build()
-            .parseClaimsJws(token)
-            .getBody();
+    Claims claims =
+        Jwts.parserBuilder().setSigningKey(getSignInKey()).build().parseClaimsJws(token).getBody();
 
-    Object authoritiesClaim = null;
+    String roles =
+        (String) claims.get("roles", List.class).stream().collect(Collectors.joining(","));
 
-    Collection<? extends GrantedAuthority> authorities = authoritiesClaim == null
-            ? AuthorityUtils.NO_AUTHORITIES
-            : AuthorityUtils.commaSeparatedStringToAuthorityList(authoritiesClaim.toString());
+    Collection<? extends GrantedAuthority> authorities =
+        AuthorityUtils.commaSeparatedStringToAuthorityList(roles);
 
-    User principal = new User(claims.getSubject(), "", AuthorityUtils.NO_AUTHORITIES);
+    User principal = new User(claims.getSubject(), "", authorities);
 
     return new UsernamePasswordAuthenticationToken(principal, token, authorities);
   }
-
 
   private UserInfo mapClaimsToUserInfo(Claims claims) {
     UserInfo userInfo = new UserInfo();
