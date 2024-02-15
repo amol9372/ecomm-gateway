@@ -49,6 +49,7 @@ logging:
       springframework:
         cloud:
           gateway: debug
+    root: debug
 
 auth0:
   userinfo:
