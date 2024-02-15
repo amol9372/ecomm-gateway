@@ -16,6 +16,7 @@ This project includes the follwing features
 - JWT Authentication & Authorization with Token generation
 - Reactive authentication manager
 - Postgres Integration
+- API realtime events using websocket (use ws://localhost:8091/ws/events in postman or any language)
 
 ## Run application locally
 
