@@ -13,7 +13,7 @@ spring:
         - id: ecomm-user
           uri: http://localhost:8080/
           predicates:
-            - Path=/user/**, /address/**, /user/*/**, /admin/**
+            - Path=/user/**, /address/**, /user/*/**, /admin/user/**
           filters:
             - PrefixPath=/api
         - id: ecomm-product
