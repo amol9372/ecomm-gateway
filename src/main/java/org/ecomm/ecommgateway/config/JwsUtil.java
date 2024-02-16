@@ -42,7 +42,7 @@ public class JwsUtil {
   @Value("${jwt.secret-key}")
   String secretKey;
 
-  static final long JWT_EXPIRATION = 2 * 60 * 60 * 1000;
+  static final long JWT_EXPIRATION = 60 * 60 * 1000;
 
   static final long REFRESH_EXPIRATION = 3 * 24 * 60 * 60 * 1000;
 
@@ -138,7 +138,7 @@ public class JwsUtil {
               .getBody();
     } catch (ExpiredJwtException e) {
       throw new JWTException(
-          HttpStatus.UNAUTHORIZED, ErrorResponse.builder().message("JWT token is expired").build());
+          HttpStatus.UNAUTHORIZED, ErrorResponse.builder().message("JWT token is expired").code("jwt_expired").build());
     } catch (UnsupportedJwtException e) {
       throw new JWTException(
           HttpStatus.UNAUTHORIZED,

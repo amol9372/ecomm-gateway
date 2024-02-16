@@ -19,7 +19,7 @@ spring:
         - id: ecomm-product
           uri: http://172.17.0.1:8081/
           predicates:
-            - Path=/product/**, /category/**, /admin/**, /inventory/**
+            - Path=/product/**, /category/**, /admin/**, /inventory/**, /brand/**
           filters:
             - PrefixPath=/api
         - id: ecomm-cart
